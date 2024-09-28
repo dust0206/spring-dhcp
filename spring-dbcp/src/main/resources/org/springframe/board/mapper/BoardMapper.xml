@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!-- namespace : 패키지와 Mapper 이름이 같아야 한다. -->
+<!--  BoardMapper interface 위치 -->
+<mapper namespace="Board">
+
+	<select id="selectPageListBoard" resultType="board">
+		select 
+			seq,     
+			title, 
+			contents, 
+			username,  
+			passwd,  
+			to_char(create_date, 'yyyy-mm-dd') as create_date,         
+			to_char(modify_date, 'yyyy-mm-dd') as modify_date,         
+			hits        
+		from or_brd
+		order by seq desc
+	</select>
+	
+	<insert id="insertBoard" parameterType="border">
+		insert into 
+			or_brd(
+				seq,     
+				title, 
+				contents, 
+				username,  
+				passwd,  
+				create_date,          
+				modify_date,          
+				hits
+			) 
+		values (
+			OR_BRD_SEQ.nextval,
+			#{title},
+			#{contents}, 
+			#{username},  
+			#{passwd},  
+			sysdate,          
+			sysdate,          
+			0        
+		)
+	</insert>
+	<update id="updatetHits" >
+		update or_brd 
+		set hits = hits + 1
+		where seq = #{seq}
+	</update>
+	
+	<select id="selectBoard" resultType="border">
+		select 
+				seq,     
+				title, 
+				contents, 
+				username,  
+				passwd,  
+				create_date,          
+				modify_date,          
+				hits
+		from or_brd
+		where 
+			seq = #{seq}
+	</select>
+	
+</mapper>
+

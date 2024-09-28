@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<!--  URL이랑 연결된거 말고  JAVA랑 연결된 객체를-생성해서 사용 : DAO, DB설정... -->
+	
+	 <!-- DBCP2 설정 -->
+<!--     <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close"> -->
+<!--         <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/> -->
+<!--         <property name="url" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:xe" /> -->
+<!--         <property name="username" value="scott"/> -->
+<!--         <property name="password" value="tiger"/> -->
+<!--     </bean> -->
+    
+    <!--  Hikari DBCP 설정 -->
+	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+<!--	Oracle 드라이버 사용 DB 처리 
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver" />
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:xe" />
+ -->
+ 		<!-- log4jdbc-log4j2 - 로그 출력 드라이버 사용 DB 처리 -->
+		<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy" />
+		<property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:xe" />
+		<property name="username" value="scott" />
+		<property name="password" value="tiger" />
+	</bean>
+	
+	<!--  dataSource는 정해져 있음 -->
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+		<constructor-arg ref="hikariConfig" />
+	</bean>
+	
+	<!-- name은 이름이고 ref는 위츼 dataSource이다 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value ="classpath:/mybatis-config.xml" />
+        <property name="mapperLocations" value="classpath:/mapper/*.xml" />
+	</bean>
+
+    <!-- 파일 모두 생성했는지 확인 -->
+<!--     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"> -->
+<!--     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"> -->
+<!--         <property name="dataSource" ref="dataSource"/> -->
+<!--         <property name="configLocation" value ="classpath:/mybatis-config.xml" /> -->
+<!--         <property name="mapperLocations" value="classpath:/mapper/*.xml" /> -->
+<!--     </bean> -->
+
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" />
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+<!--     <bean id="multipartResolver" -->
+<!--           class="org.springframework.web.multipart.commons.CommonsMultipartResolver"> -->
+
+<!--         <property name="defaultEncoding" value="UTF-8" /> -->
+<!--         <property name="maxUploadSize" value="10000000" /> -->
+
+<!--     </bean> -->
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+	<!--  mybatis를 만들어서 처리하기 하고 이를 scan하기 위한 처리 -->
+	<mybatis-spring:scan base-package="org.springframe"/>
+	
+	<!--  context를 자동으로 생성하기 위해서 -->
+	<context:component-scan base-package="org.springframe" />
+</beans>

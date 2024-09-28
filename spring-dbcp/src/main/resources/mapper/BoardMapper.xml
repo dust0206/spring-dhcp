@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Board">
+
+	<select id="selectPageListBoard" parameterType="java.util.HashMap" resultType="org.springframe.board.dto.BoardDTO">
+		select 
+		     seq,     
+		        title,
+		        contents, 
+		        username,  
+		        passwd,  
+		        create_date,          
+		        modify_date,          
+		        hits        
+		from (
+		    select 
+		        rownum rnum,
+		        seq,     
+		        title,
+		        contents, 
+		        username,  
+		        passwd,  
+		        create_date,          
+		        modify_date,          
+		        hits        
+		    from(
+		        select 
+		            seq,     
+		            title, 
+		            contents, 
+		            username,  
+		            passwd,  
+		            to_char(create_date, 'YYYY-MM-DD') AS create_date,          
+		            to_char(modify_date, 'YYYY-MM-DD') AS modify_date,          
+		            hits        
+		        from or_brd
+		        order by seq desc
+		    )
+		)
+		where rnum between #{start} and #{limit}
+	</select>
+	
+    <insert id="insertBoard" parameterType="board">
+        insert into or_brd(
+        	seq, 
+        	title, 
+        	contents, 
+        	username, 
+        	passwd,
+        	create_date,
+        	modify_date,
+        	hits
+        )
+        values (
+        	or_brd_seq.nextval,
+        	#{title}, 
+        	#{contents}, 
+        	#{username}, 
+        	#{passwd}, 
+        	sysdate,
+        	sysdate,
+        	0
+        )
+    </insert>
+    <select id="selectBoard"   resultType="org.springframe.board.dto.BoardDTO">
+		select 
+				seq,     
+				title, 
+				contents, 
+				username,  
+				passwd,  
+				to_char(create_date, 'YYYY-MM-DD HH24:MI') as create_date,          
+				to_char(modify_date, 'YYYY-MM-DD HH24:MI') as modify_date ,          
+				hits
+		from or_brd
+		where 
+			seq=#{seq}
+	</select>
+	
+	<insert id="updatetHits" >
+		update or_brd
+			set hits =  hits + 1
+		where 
+			seq = #{seq}
+	</insert>
+	
+	<update id="updateBoard" parameterType="board">
+		update or_brd
+		set 
+			title = #{title},
+			contents = #{contents},
+			modify_date = sysdate 
+		where seq = #{seq}
+			
+	</update>
+	<select id="pagingList" parameterType="java.util.HashMap" resultType="org.springframe.board.dto.BoardDTO">
+		select 
+		   seq,
+		    title,
+		    contents,
+		    username,
+		    passwd,
+		    to_char(create_date, 'YYYY-MM-DD HH24:MI') AS create_date,
+		    to_char(modify_date, 'YYYY-MM-DD HH24:MI') AS modify_date,
+		    hits
+		from 
+		(
+		    select rownum nnum,
+		        seq,
+		        title,
+		        contents,
+		        username,
+		        passwd,
+		        create_date,
+		        modify_date,
+		        hits
+		    from
+		    (
+		        select 
+		            seq,
+		            title,
+		            contents,
+		            username,
+		            passwd,
+		            create_date,
+		            modify_date,
+		            hits
+		        from or_brd
+		        order by seq desc
+		    )
+		)
+		where nnum between #{start} and #{limit}
+	</select>
+	
+	<select id="pagingCount" resultType="Integer">
+		select count(seq) from or_brd
+	</select>
+	
+    <delete id="deleteBoard" >
+        delete from or_brd 
+        where seq=#{seq}
+    </delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
