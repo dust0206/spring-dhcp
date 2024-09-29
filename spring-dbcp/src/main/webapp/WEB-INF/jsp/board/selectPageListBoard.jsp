@@ -36,7 +36,7 @@
 					<span>이전</span>
 				</c:when>
 				<c:otherwise>
-					<a href="/board/selectPageListBoard.do?page=${paging.page -1 }">[이전]</a>
+					<a href="/board/selectPageListBoard.do?page=${paging.page -1 }">[이전] </a>
 				</c:otherwise>
 			</c:choose>
 			 
@@ -57,15 +57,12 @@
 			 		<span>[다음]</span>
 			 	</c:when>
 			 	<c:otherwise>
-			 		<a href="/board/selectPageListBoard.do?page=${paging.page + 1 }">[다음]</a>
+			 		<a href="/board/selectPageListBoard.do?page=${paging.page + 1 }"> [다음]</a>
 			 	</c:otherwise>
 			 </c:choose>
-			 
-			
 			</td>
 			
 			<td align="center">
-			
 				<a href="/board/insertBoard.do"><button>글쓰기</button></a>
 			</td>
 		</tr>
